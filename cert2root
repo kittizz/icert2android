@@ -1,0 +1,15 @@
+!/bin/bash
+
+PEM_FILE_NAME=server.crt
+hash=$(openssl x509 -inform PEM -subject_hash_old -in $PEM_FILE_NAME | head -1)
+OUT_FILE_NAME="$hash.0"
+
+cp $PEM_FILE_NAME $OUT_FILE_NAME
+openssl x509 -inform PEM -text -in $PEM_FILE_NAME -out /dev/null >> $OUT_FILE_NAME
+
+echo "Saved to $OUT_FILE_NAME"
+adb root
+adb shell mount -o rw,remount,rw /system
+adb push $OUT_FILE_NAME /system/etc/security/cacerts/
+adb shell mount -o ro,remount,ro /system
+adb reboot

@@ -1,0 +1,10 @@
+!/bin/bash
+
+subjectHash=`openssl x509 -inform PEM -subject_hash_old -in $PEM_FILE_NAME | head -n 1`
+OUT_FILE_NAME="$subjectHash.0"
+openssl x509 -in $PEM_FILE_NAME -inform PEM -outform DER -out $OUT_FILE_NAME
+echo "Saved to $OUT_FILE_NAME"
+adb root
+adb push ./$subjectHash.0 /data/misc/user/0/cacerts-added/$OUT_FILE_NAME
+adb shell "su 0 chmod 644 /data/misc/user/0/cacerts-added/$OUT_FILE_NAME"
+adb reboot
